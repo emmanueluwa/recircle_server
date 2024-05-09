@@ -1,7 +1,17 @@
 import { compare, genSalt, hash } from "bcrypt";
 import { Schema, model } from "mongoose";
 
-const schema = new Schema({
+interface AuthVerificationTokenDocument extends Document {
+  owner: Schema.Types.ObjectId;
+  token: string;
+  createdAt: Date;
+}
+
+interface Methods {
+  compareToken(token: string): Promise<boolean>;
+}
+
+const schema = new Schema<AuthVerificationTokenDocument, {}, Methods>({
   owner: {
     type: Schema.Types.ObjectId,
     ref: "User",
@@ -27,7 +37,7 @@ schema.pre("save", async function (next) {
   next();
 });
 
-schema.methods.compareToken = async function (token: string) {
+schema.methods.compareToken = async function (token) {
   return await compare(token, this.token);
 };
 

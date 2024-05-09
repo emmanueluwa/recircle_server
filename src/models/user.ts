@@ -1,7 +1,17 @@
-import { Schema, model } from "mongoose";
+import { Document, Schema, model } from "mongoose";
 import { hash, compare, genSalt } from "bcrypt";
 
-const userSchema = new Schema(
+interface UserDocument extends Document {
+  name: string;
+  email: string;
+  password: string;
+}
+
+interface Methods {
+  comparePassword(password: string): Promise<boolean>;
+}
+
+const userSchema = new Schema<UserDocument, {}, Methods>(
   {
     email: {
       type: String,
@@ -24,7 +34,7 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-userSchema.methods.comparePassword = async function (password: string) {
+userSchema.methods.comparePassword = async function (password) {
   return await compare(password, this.password);
 };
 
