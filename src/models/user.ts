@@ -5,6 +5,7 @@ interface UserDocument extends Document {
   name: string;
   email: string;
   password: string;
+  verified: boolean;
 }
 
 interface Methods {
@@ -20,6 +21,10 @@ const userSchema = new Schema<UserDocument, {}, Methods>(
     },
     name: { type: String, required: true },
     password: { type: String, required: true },
+    verified: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

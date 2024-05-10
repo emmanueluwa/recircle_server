@@ -49,3 +49,31 @@ export const createNewUser: RequestHandler = async (req, res) => {
 
   res.json({ message: "Please check your inbox" });
 };
+
+export const verifyEmail: RequestHandler = async (req, res) => {
+  //read the incoming id and token data
+  const { id, token } = req.body;
+
+  //find token in db send error if none
+  const authToken = await AuthVerificationTokenModel.findOne({ owner: id });
+  if (!authToken) return sendErrorResponse(res, "unauthorised request!", 403);
+
+  //if token is valid update user
+  const isMatched = await authToken.compareToken(token);
+  console.log(isMatched);
+  if (!isMatched)
+    return sendErrorResponse(
+      res,
+      "unauthorised request, token not valid!",
+      403
+    );
+
+  //changed verified property to true for user
+  await UserModel.findByIdAndUpdate(id, { verfied: true });
+
+  await AuthVerificationTokenModel.findByIdAndDelete(authToken._id);
+
+  res.json({
+    message: "Thanks for joining the community! Your email is now verified",
+  });
+};
