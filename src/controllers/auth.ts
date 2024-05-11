@@ -164,3 +164,21 @@ export const grantAccesToken: RequestHandler = async (req, res) => {
     tokens: { refresh: newRefreshToken, access: newAccessToken },
   });
 };
+
+export const signOut: RequestHandler = async (req, res) => {
+  const { refreshToken } = req.body;
+
+  //remove the refresh token
+  const user = await UserModel.findOne({
+    _id: req.user.id,
+    tokens: refreshToken,
+  });
+  if (!user)
+    return sendErrorResponse(res, "Unauthorised request, user not found!", 403);
+
+  const newTokens = user.tokens.filter((t) => t !== refreshToken);
+  user.tokens = newTokens;
+  await user.save();
+
+  res.send();
+};

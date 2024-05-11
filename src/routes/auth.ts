@@ -5,6 +5,7 @@ import {
   grantAccesToken,
   sendProfile,
   signIn,
+  signOut,
   verifyEmail,
 } from "./../controllers/auth";
 import validate from "./../middleware/validate";
@@ -20,5 +21,6 @@ authRouter.post("/sign-in", signIn);
 authRouter.get("/profile", isAuth, sendProfile);
 //user only comes to this endpoint if token invalid so auth middleware not needed
 authRouter.post("/refresh-token", grantAccesToken);
+authRouter.post("/sign-out", isAuth, signOut);
 
 export default authRouter;
