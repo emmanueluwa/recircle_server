@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { createNewUser, verifyEmail } from "./../controllers/auth";
+import { createNewUser, signIn, verifyEmail } from "./../controllers/auth";
 import validate from "./../middleware/validate";
-import { newUserSchema } from "./../utils/validationSchema";
+import { newUserSchema, verifyTokenSchema } from "./../utils/validationSchema";
 
 const authRouter = Router();
 
 authRouter.post("/sign-up", validate(newUserSchema), createNewUser);
-authRouter.post("/verify", verifyEmail);
+authRouter.post("/verify", validate(verifyTokenSchema), verifyEmail);
+authRouter.post("/sign-in", signIn);
 
 export default authRouter;
