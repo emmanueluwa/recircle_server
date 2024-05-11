@@ -116,3 +116,10 @@ export const signIn: RequestHandler = async (req, res) => {
     tokens: { refresh: refreshToken, acces: accessToken },
   });
 };
+
+export const sendProfile: RequestHandler = async (req, res) => {
+  //get user from request object that came from successful signin
+  res.json({
+    profile: req.user,
+  });
+};
