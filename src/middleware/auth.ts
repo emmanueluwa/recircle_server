@@ -3,6 +3,22 @@ import { sendErrorResponse } from "src/utils/helper";
 import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import UserModel from "src/models/user";
 
+interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  verified: boolean;
+}
+
+//make changes to global variable
+declare global {
+  namespace Express {
+    interface Request {
+      user: UserProfile;
+    }
+  }
+}
+
 export const isAuth: RequestHandler = async (req, res, next) => {
   try {
     // read auth header and validate
@@ -22,7 +38,7 @@ export const isAuth: RequestHandler = async (req, res, next) => {
       id: user._id,
       name: user.name,
       email: user.email,
-      verfied: user.verified,
+      verified: user.verified,
     };
 
     next();

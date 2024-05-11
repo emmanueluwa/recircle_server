@@ -31,7 +31,7 @@ export const createNewUser: RequestHandler = async (req, res) => {
   await AuthVerificationTokenModel.create({ owner: user._id, token });
 
   //send verification link with token to email
-  const link = `http://localhost:8000/verify?id=${user._id}&token=${token}`;
+  const link = `http://localhost:8000/verify.html?id=${user._id}&token=${token}`;
 
   const transport = nodemailer.createTransport({
     host: "sandbox.smtp.mailtrap.io",
