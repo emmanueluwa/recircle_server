@@ -5,6 +5,7 @@ import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import AuthVerificationTokenModel from "src/models/authVerificationToken";
 import { sendErrorResponse } from "src/utils/helper";
+import mail from "src/utils/mail";
 
 export const createNewUser: RequestHandler = async (req, res) => {
   //read incoming data
@@ -33,20 +34,7 @@ export const createNewUser: RequestHandler = async (req, res) => {
   //send verification link with token to email
   const link = `http://localhost:8000/verify.html?id=${user._id}&token=${token}`;
 
-  const transport = nodemailer.createTransport({
-    host: "sandbox.smtp.mailtrap.io",
-    port: 2525,
-    auth: {
-      user: "66dacff4db2f1d",
-      pass: "7f38f75febf599",
-    },
-  });
-
-  await transport.sendMail({
-    to: user.email,
-    from: "verification@recircle.com",
-    html: `<h1>Click the link to verify your account: <a href="${link}">link</a></h1>`,
-  });
+  await mail.sendVerification(user.email, link);
 
   res.json({ message: "Please check your inbox" });
 };
@@ -78,6 +66,22 @@ export const verifyEmail: RequestHandler = async (req, res) => {
   res.json({
     message: "Thanks for joining the community! Your email is now verified",
   });
+};
+
+export const generateVerificationLink: RequestHandler = async (req, res) => {
+  //read the incoming id
+  const { id } = req.user;
+  const token = crypto.randomBytes(36).toString("hex");
+
+  const link = `http://localhost:8000/verify.html?id=${id}&token=${token}`;
+
+  await AuthVerificationTokenModel.findOneAndDelete({ owner: id });
+
+  await AuthVerificationTokenModel.create({ owner: id, token });
+
+  await mail.sendVerification(req.user.email, link);
+
+  res.json({ message: "Please check your email inbox" });
 };
 
 export const signIn: RequestHandler = async (req, res) => {
@@ -121,5 +125,42 @@ export const sendProfile: RequestHandler = async (req, res) => {
   //get user from request object that came from successful signin
   res.json({
     profile: req.user,
+  });
+};
+
+export const grantAccesToken: RequestHandler = async (req, res) => {
+  //read and verify refresh token
+  const { refreshToken } = req.body;
+  if (!refreshToken)
+    return sendErrorResponse(res, "Unauthorised request!", 403);
+
+  const payload = jwt.verify(refreshToken, "secret") as { id: string };
+
+  if (!payload.id) return sendErrorResponse(res, "Unauthorised request!", 401);
+
+  const user = await UserModel.findOne({
+    _id: payload.id,
+    tokens: refreshToken,
+  });
+
+  if (!user) {
+    //user refresh token is compromised, remove all previous tokens
+    await UserModel.findByIdAndUpdate(payload.id, { tokens: [] });
+    return sendErrorResponse(res, "Unauthorised request", 401);
+  }
+
+  //generate tokens
+  const newAccessToken = jwt.sign({ id: user._id }, "secret", {
+    expiresIn: "15m",
+  });
+  const newRefreshToken = jwt.sign({ id: user._id }, "secret");
+
+  //filter through tokens
+  user.tokens = user.tokens.filter((t) => t !== refreshToken);
+  user.tokens.push(newRefreshToken);
+  await user.save();
+
+  res.json({
+    tokens: { refresh: newRefreshToken, access: newAccessToken },
   });
 };
