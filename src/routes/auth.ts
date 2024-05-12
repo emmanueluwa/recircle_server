@@ -4,6 +4,8 @@ import {
   generateForgotLink,
   generateVerificationLink,
   grantAccesToken,
+  grantValid,
+  isValidPasswordResetToken,
   sendProfile,
   signIn,
   signOut,
@@ -24,5 +26,11 @@ authRouter.get("/profile", isAuth, sendProfile);
 authRouter.post("/refresh-token", grantAccesToken);
 authRouter.post("/sign-out", isAuth, signOut);
 authRouter.post("/forgot-pass", generateForgotLink);
+authRouter.post(
+  "/verify-pass-reset-token",
+  validate(verifyTokenSchema),
+  isValidPasswordResetToken,
+  grantValid
+);
 
 export default authRouter;

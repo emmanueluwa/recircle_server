@@ -215,3 +215,28 @@ export const generateForgotLink: RequestHandler = async (req, res) => {
 
   res.json({ message: "Please check your email inbox" });
 };
+
+export const isValidPasswordResetToken: RequestHandler = async (
+  req,
+  res,
+  next
+) => {
+  //read token and id
+  const { id, token } = req.body;
+
+  // check db for token, throw errror if notvalid
+  const resetPassToken = await PassResetTokenModel.findOne({ owner: id });
+  if (!resetPassToken)
+    return sendErrorResponse(res, "Unauthorised request, invalid token!", 403);
+
+  //compare token to token in db
+  const matched = await resetPassToken.compareToken(token);
+  if (!matched)
+    return sendErrorResponse(res, "Unauthorised request, invalid token!", 403);
+
+  next();
+};
+
+export const grantValid: RequestHandler = async (req, res) => {
+  res.json({ valid: true });
+};
