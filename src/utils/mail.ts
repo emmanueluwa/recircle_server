@@ -8,6 +8,7 @@ const transport = nodemailer.createTransport({
     pass: process.env.MAIL_TRAP_PASSWORD,
   },
 });
+
 const sendVerification = async (email: string, link: string) => {
   await transport.sendMail({
     to: email,
@@ -16,8 +17,17 @@ const sendVerification = async (email: string, link: string) => {
   });
 };
 
+const sendPasswordResetLink = async (email: string, link: string) => {
+  await transport.sendMail({
+    to: email,
+    from: "pass-help@recircle.com",
+    html: `<h1>Click the link to update your account password: <a href="${link}">link</a></h1>`,
+  });
+};
+
 const mail = {
   sendVerification,
+  sendPasswordResetLink,
 };
 
 export default mail;

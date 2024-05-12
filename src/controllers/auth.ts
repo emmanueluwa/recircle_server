@@ -6,9 +6,11 @@ import jwt from "jsonwebtoken";
 import AuthVerificationTokenModel from "src/models/authVerificationToken";
 import { sendErrorResponse } from "src/utils/helper";
 import mail from "src/utils/mail";
+import PassResetTokenModel from "src/models/passwordResetToken";
 
 const VERIFICATION_LINK = process.env.VERIFICATION_LINK;
 const JWT_SECRET = process.env.JWT_SECRET!;
+const PASSWORD_RESET_LINK = process.env.PASSWORD_RESET_LINK;
 
 export const createNewUser: RequestHandler = async (req, res) => {
   //read incoming data
@@ -184,4 +186,32 @@ export const signOut: RequestHandler = async (req, res) => {
   await user.save();
 
   res.send();
+};
+
+export const generateForgotLink: RequestHandler = async (req, res) => {
+  //ask user for email
+  const { email } = req.body;
+
+  //find user, if none send error
+  const user = await UserModel.findOne({ email });
+  if (!user)
+    return sendErrorResponse(
+      res,
+      "Email does not exist within community!",
+      404
+    );
+
+  // generate password link, first remove any current token
+  await PassResetTokenModel.findOneAndDelete({ owner: user._id });
+
+  //generate token
+  const token = crypto.randomBytes(36).toString("hex");
+  await PassResetTokenModel.create({ owner: user._id, token });
+
+  //generate and send reset link with token to email
+  const passwordResetLink = `${PASSWORD_RESET_LINK}?id=${user._id}&token=${token}`;
+
+  await mail.sendPasswordResetLink(user.email, passwordResetLink);
+
+  res.json({ message: "Please check your email inbox" });
 };

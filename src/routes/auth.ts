@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   createNewUser,
+  generateForgotLink,
   generateVerificationLink,
   grantAccesToken,
   sendProfile,
@@ -22,5 +23,6 @@ authRouter.get("/profile", isAuth, sendProfile);
 //user only comes to this endpoint if token invalid so auth middleware not needed
 authRouter.post("/refresh-token", grantAccesToken);
 authRouter.post("/sign-out", isAuth, signOut);
+authRouter.post("/forgot-pass", generateForgotLink);
 
 export default authRouter;
