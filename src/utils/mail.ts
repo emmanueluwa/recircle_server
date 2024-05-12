@@ -4,8 +4,8 @@ const transport = nodemailer.createTransport({
   host: "sandbox.smtp.mailtrap.io",
   port: 2525,
   auth: {
-    user: "66dacff4db2f1d",
-    pass: "7f38f75febf599",
+    user: process.env.MAIL_TRAP_USER,
+    pass: process.env.MAIL_TRAP_PASSWORD,
   },
 });
 const sendVerification = async (email: string, link: string) => {

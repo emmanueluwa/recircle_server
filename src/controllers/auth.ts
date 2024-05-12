@@ -7,6 +7,9 @@ import AuthVerificationTokenModel from "src/models/authVerificationToken";
 import { sendErrorResponse } from "src/utils/helper";
 import mail from "src/utils/mail";
 
+const VERIFICATION_LINK = process.env.VERIFICATION_LINK;
+const JWT_SECRET = process.env.JWT_SECRET!;
+
 export const createNewUser: RequestHandler = async (req, res) => {
   //read incoming data
   const { email, password, name } = req.body;
@@ -32,7 +35,7 @@ export const createNewUser: RequestHandler = async (req, res) => {
   await AuthVerificationTokenModel.create({ owner: user._id, token });
 
   //send verification link with token to email
-  const link = `http://localhost:8000/verify.html?id=${user._id}&token=${token}`;
+  const link = `${VERIFICATION_LINK}?id=${user._id}&token=${token}`;
 
   await mail.sendVerification(user.email, link);
 
@@ -73,7 +76,7 @@ export const generateVerificationLink: RequestHandler = async (req, res) => {
   const { id } = req.user;
   const token = crypto.randomBytes(36).toString("hex");
 
-  const link = `http://localhost:8000/verify.html?id=${id}&token=${token}`;
+  const link = `${VERIFICATION_LINK}?id=${id}&token=${token}`;
 
   await AuthVerificationTokenModel.findOneAndDelete({ owner: id });
 
@@ -99,10 +102,10 @@ export const signIn: RequestHandler = async (req, res) => {
   const payload = { id: user._id };
 
   //generate tokens
-  const accessToken = jwt.sign(payload, "secret", {
+  const accessToken = jwt.sign(payload, JWT_SECRET, {
     expiresIn: "15m",
   });
-  const refreshToken = jwt.sign(payload, "secret");
+  const refreshToken = jwt.sign(payload, JWT_SECRET);
 
   if (!user.tokens) user.tokens = [refreshToken];
   else user.tokens.push(refreshToken);
@@ -134,7 +137,7 @@ export const grantAccesToken: RequestHandler = async (req, res) => {
   if (!refreshToken)
     return sendErrorResponse(res, "Unauthorised request!", 403);
 
-  const payload = jwt.verify(refreshToken, "secret") as { id: string };
+  const payload = jwt.verify(refreshToken, JWT_SECRET) as { id: string };
 
   if (!payload.id) return sendErrorResponse(res, "Unauthorised request!", 401);
 
@@ -150,10 +153,10 @@ export const grantAccesToken: RequestHandler = async (req, res) => {
   }
 
   //generate tokens
-  const newAccessToken = jwt.sign({ id: user._id }, "secret", {
+  const newAccessToken = jwt.sign({ id: user._id }, JWT_SECRET, {
     expiresIn: "15m",
   });
-  const newRefreshToken = jwt.sign({ id: user._id }, "secret");
+  const newRefreshToken = jwt.sign({ id: user._id }, JWT_SECRET);
 
   //filter through tokens
   user.tokens = user.tokens.filter((t) => t !== refreshToken);

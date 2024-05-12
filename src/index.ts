@@ -1,3 +1,4 @@
+import "dotenv/config";
 import "express-async-errors";
 import "./db";
 import express, { RequestHandler } from "express";
