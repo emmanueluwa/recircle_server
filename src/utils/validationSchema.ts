@@ -42,5 +42,5 @@ export const verifyTokenSchema = yup.object({
 
 export const resetPasswordSchema = yup.object({
   ...tokenAndId,
-  password,
+  ...password,
 });
