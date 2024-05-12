@@ -25,9 +25,18 @@ const sendPasswordResetLink = async (email: string, link: string) => {
   });
 };
 
+const sendPasswordUpdateMessage = async (email: string) => {
+  await transport.sendMail({
+    to: email,
+    from: "pass-help@recircle.com",
+    html: `<h1>Your password is updated! You can now login with your new password.</h1>`,
+  });
+};
+
 const mail = {
   sendVerification,
   sendPasswordResetLink,
+  sendPasswordUpdateMessage,
 };
 
 export default mail;

@@ -240,3 +240,31 @@ export const isValidPasswordResetToken: RequestHandler = async (
 export const grantValid: RequestHandler = async (req, res) => {
   res.json({ valid: true });
 };
+
+export const updatePassword: RequestHandler = async (req, res) => {
+  // check user, previous middleware alrady checked token and password
+  const { id, password } = req.body;
+  const user = await UserModel.findById(id);
+  if (!user) return sendErrorResponse(res, "Unauthorised access!", 403);
+
+  //check if user is submitting old password
+  const matched = await user.comparePassword(password);
+  if (matched)
+    return sendErrorResponse(
+      res,
+      "Please use a different password from your old one!",
+      422
+    );
+
+  //change users password
+  user.password = password;
+  await user.save();
+
+  await PassResetTokenModel.findOneAndDelete({ owner: user._id });
+
+  //send email to user confirming password change
+  await mail.sendPasswordUpdateMessage(user.email);
+
+  //send response back
+  res.json({ message: "Password resets successfully" });
+};
