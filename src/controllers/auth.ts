@@ -283,3 +283,12 @@ export const updateProfile: RequestHandler = async (req, res) => {
   //send response back with new names
   res.json({ profile: { ...req.user, name } });
 };
+
+export const updateAvater: RequestHandler = async (req, res) => {
+  // check user, previous middleware alrady checked token and password
+  console.log(req.body);
+  console.log(req.files);
+
+  //send response back with new names
+  res.json();
+};

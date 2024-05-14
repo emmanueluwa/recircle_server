@@ -9,6 +9,7 @@ import {
   sendProfile,
   signIn,
   signOut,
+  updateAvater,
   updatePassword,
   updateProfile,
   verifyEmail,
@@ -20,6 +21,7 @@ import {
   verifyTokenSchema,
 } from "./../utils/validationSchema";
 import { isAuth } from "src/middleware/auth";
+import fileParser from "src/middleware/fileParser";
 
 const authRouter = Router();
 
@@ -46,5 +48,6 @@ authRouter.post(
 );
 
 authRouter.patch("/update-profile", isAuth, updateProfile);
+authRouter.patch("/update-avatar", fileParser, updateAvater);
 
 export default authRouter;
