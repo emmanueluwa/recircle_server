@@ -268,3 +268,18 @@ export const updatePassword: RequestHandler = async (req, res) => {
   //send response back
   res.json({ message: "Password resets successfully" });
 };
+
+export const updateProfile: RequestHandler = async (req, res) => {
+  // check user, previous middleware alrady checked token and password
+  const { name } = req.body;
+
+  //check name entered is valid
+  if (typeof name !== "string" || name.trim().length < 3) {
+    return sendErrorResponse(res, "Invalid name!", 422);
+  }
+
+  await UserModel.findByIdAndUpdate(req.user.id, { name });
+
+  //send response back with new names
+  res.json({ profile: { ...req.user, name } });
+};

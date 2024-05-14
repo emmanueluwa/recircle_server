@@ -19,6 +19,8 @@ declare global {
   }
 }
 
+const JWT_SECRET = process.env.JWT_SECRET!;
+
 export const isAuth: RequestHandler = async (req, res, next) => {
   try {
     // read auth header and validate
@@ -27,7 +29,7 @@ export const isAuth: RequestHandler = async (req, res, next) => {
 
     // remove "Bearer" from infront of token
     const token = authToken.split("Bearer ")[1];
-    const payload = jwt.verify(token, "secret") as { id: string };
+    const payload = jwt.verify(token, JWT_SECRET) as { id: string };
 
     // check if there is a user with this id
     const user = await UserModel.findById(payload.id);
