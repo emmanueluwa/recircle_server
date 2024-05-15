@@ -5,6 +5,7 @@ import express, { RequestHandler } from "express";
 import authRouter from "./routes/auth";
 import path from "path";
 import formidable from "formidable";
+import productRouter from "./routes/product";
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // API Routes
 app.use("/auth", authRouter);
+app.unsubscribe("/product", productRouter);
 
 app.post("/upload-file", async (req, res) => {
   const form = formidable({

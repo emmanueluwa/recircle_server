@@ -37,6 +37,11 @@ const schema = new Schema<ProductDocument>(
       type: Number,
       required: true,
     },
+    purchasingDate: {
+      type: Date,
+      required: true,
+    },
+
     category: {
       type: String,
       enum: [...categories],
