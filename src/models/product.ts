@@ -9,7 +9,7 @@ export interface ProductDocument extends Document {
   owner: Schema.Types.ObjectId;
   name: string;
   price: number;
-  purchasingDate: Date;
+  // purchasingDate: Date;
   category: string;
   images: productImage[];
   thumbnail: string;
@@ -37,10 +37,10 @@ const schema = new Schema<ProductDocument>(
       type: Number,
       required: true,
     },
-    purchasingDate: {
-      type: Date,
-      required: true,
-    },
+    // purchasingDate: {
+    //   type: Date,
+    //   required: true,
+    // },
 
     category: {
       type: String,

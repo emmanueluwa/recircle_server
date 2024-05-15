@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // API Routes
 app.use("/auth", authRouter);
-app.unsubscribe("/product", productRouter);
+app.use("/product", productRouter);
 
 app.post("/upload-file", async (req, res) => {
   const form = formidable({
