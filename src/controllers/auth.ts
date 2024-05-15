@@ -322,7 +322,13 @@ export const updateAvater: RequestHandler = async (req, res) => {
 
   //upload avatar file
   const { secure_url: url, public_id: id } = await cloudinary.uploader.upload(
-    avatar.filepath
+    avatar.filepath,
+    {
+      width: 300,
+      height: 300,
+      crop: "thumb",
+      gravity: "face",
+    }
   );
   user.avatar = { url, id };
   await user.save();
