@@ -48,6 +48,6 @@ authRouter.post(
 );
 
 authRouter.patch("/update-profile", isAuth, updateProfile);
-authRouter.patch("/update-avatar", fileParser, updateAvater);
+authRouter.patch("/update-avatar", isAuth, fileParser, updateAvater);
 
 export default authRouter;

@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import UserModel from "./../models/user";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
+import { v2 as cloudinary } from "cloudinary";
 import jwt from "jsonwebtoken";
 import AuthVerificationTokenModel from "src/models/authVerificationToken";
 import { sendErrorResponse } from "src/utils/helper";
@@ -11,6 +12,16 @@ import PassResetTokenModel from "src/models/passwordResetToken";
 const VERIFICATION_LINK = process.env.VERIFICATION_LINK;
 const JWT_SECRET = process.env.JWT_SECRET!;
 const PASSWORD_RESET_LINK = process.env.PASSWORD_RESET_LINK;
+const CLOUD_NAME = process.env.CLOUD_NAME!;
+const CLOUD_KEY = process.env.CLOUD_KEY!;
+const CLOUD_SECRET = process.env.CLOUD_SECRET!;
+
+cloudinary.config({
+  cloud_name: CLOUD_NAME,
+  api_key: CLOUD_KEY,
+  api_secret: CLOUD_SECRET,
+  secure: true,
+});
 
 export const createNewUser: RequestHandler = async (req, res) => {
   //read incoming data
@@ -285,10 +296,37 @@ export const updateProfile: RequestHandler = async (req, res) => {
 };
 
 export const updateAvater: RequestHandler = async (req, res) => {
-  // check user, previous middleware alrady checked token and password
-  console.log(req.body);
-  console.log(req.files);
+  const { avatar } = req.files;
+  //check if multiple files habe been uploaded
+  if (Array.isArray(avatar)) {
+    return sendErrorResponse(res, "multiple files are not allowed!", 422);
+  }
+
+  //check file is an image
+  if (!avatar.mimetype?.startsWith("image")) {
+    return sendErrorResponse(res, "Invalid image file!", 422);
+  }
+  console.log("got here");
+  //check if user already has an avatar
+  const user = await UserModel.findById(req.user.id);
+  console.log("got here!");
+
+  if (!user) {
+    return sendErrorResponse(res, "User not found!", 404);
+  }
+
+  if (user.avatar?.id) {
+    //remove avatar
+    await cloudinary.uploader.destroy(user.avatar.id);
+  }
+
+  //upload avatar file
+  const { secure_url: url, public_id: id } = await cloudinary.uploader.upload(
+    avatar.filepath
+  );
+  user.avatar = { url, id };
+  await user.save();
 
   //send response back with new names
-  res.json();
+  res.json({ profile: { ...req.user, avatar: user.avatar.url } });
 };
