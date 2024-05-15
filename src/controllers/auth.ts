@@ -8,6 +8,7 @@ import AuthVerificationTokenModel from "src/models/authVerificationToken";
 import { sendErrorResponse } from "src/utils/helper";
 import mail from "src/utils/mail";
 import PassResetTokenModel from "src/models/passwordResetToken";
+import { isValidObjectId } from "mongoose";
 
 const VERIFICATION_LINK = process.env.VERIFICATION_LINK;
 const JWT_SECRET = process.env.JWT_SECRET!;
@@ -335,4 +336,22 @@ export const updateAvater: RequestHandler = async (req, res) => {
 
   //send response back with new names
   res.json({ profile: { ...req.user, avatar: user.avatar.url } });
+};
+
+export const sendPublicProfile: RequestHandler = async (req, res) => {
+  const profileId = req.params.id;
+
+  //check the id is valid
+  if (!isValidObjectId(profileId)) {
+    return sendErrorResponse(res, "Invalid profile id!", 422);
+  }
+
+  const user = await UserModel.findById(profileId);
+  if (!user) {
+    return sendErrorResponse(res, "Profile not found", 404);
+  }
+
+  res.json({
+    profile: { id: user._id, name: user.name, avatar: user.avatar?.url },
+  });
 };
