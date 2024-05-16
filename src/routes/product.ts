@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { listNewProduct } from "src/controllers/product";
+import { listNewProduct, updateProduct } from "src/controllers/product";
 import { isAuth } from "src/middleware/auth";
 import fileParser from "src/middleware/fileParser";
 import validate from "src/middleware/validate";
@@ -13,6 +13,14 @@ productRouter.post(
   fileParser,
   validate(newProductSchema),
   listNewProduct
+);
+
+productRouter.patch(
+  "/:id",
+  isAuth,
+  fileParser,
+  validate(newProductSchema),
+  updateProduct
 );
 
 export default productRouter;

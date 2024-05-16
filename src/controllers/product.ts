@@ -1,5 +1,6 @@
 import { UploadApiResponse } from "cloudinary";
 import { RequestHandler } from "express";
+import { isValidObjectId } from "mongoose";
 import cloudUploader from "src/cloud";
 import ProductModel from "src/models/product";
 import { sendErrorResponse } from "src/utils/helper";
@@ -84,4 +85,81 @@ export const listNewProduct: RequestHandler = async (req, res) => {
 
   //creating object for db = 201
   res.status(201).json({ message: "Added new product" });
+};
+
+export const updateProduct: RequestHandler = async (req, res) => {
+  const { name, price, category, description, purchasingDate, thumbnail } =
+    req.body;
+  const productId = req.params.id;
+  if (!isValidObjectId(productId))
+    return sendErrorResponse(res, "Invalid product id!", 422);
+
+  const product = await ProductModel.findOneAndUpdate(
+    { _id: productId, owner: req.user.id },
+    { name, price, category, description, purchasingDate },
+    { new: true }
+  );
+  if (!product) return sendErrorResponse(res, "Product not found!", 404);
+
+  if (typeof thumbnail === "string") product.thumbnail = thumbnail;
+
+  const { images } = req.files;
+  const isMultipleImages = Array.isArray(images);
+
+  //restrict no. of image upload
+  if (isMultipleImages) {
+    if (product.images.length + images.length > 5)
+      return sendErrorResponse(res, "Image files cannot be more than 5!", 422);
+  }
+
+  let invalidFileType = false;
+
+  //check if more than one image
+  if (isMultipleImages) {
+    for (let img of images) {
+      if (!img.mimetype?.startsWith("image")) {
+        invalidFileType = true;
+        break;
+      }
+    }
+  } else {
+    //case of single file
+    if (images) {
+      if (!images.mimetype?.startsWith("image")) {
+        invalidFileType = true;
+      }
+    }
+  }
+
+  if (invalidFileType)
+    return sendErrorResponse(
+      res,
+      "Invalid file type, files must be images!",
+      422
+    );
+
+  //upload files
+  if (isMultipleImages) {
+    const uploadPromise = images.map((file) => uploadImage(file.filepath));
+    // handle entire promise
+    const uploadResults = await Promise.all(uploadPromise);
+
+    //add image urls and public id to products images field
+    const newImages = uploadResults.map(({ secure_url, public_id }) => {
+      return { url: secure_url, id: public_id };
+    });
+
+    product.images.push(...newImages);
+  } else {
+    if (images) {
+      const { secure_url, public_id } = await uploadImage(images.filepath);
+      product.images.push({ url: secure_url, id: public_id });
+    }
+  }
+
+  //save to db
+  await product.save();
+
+  //creating object for db = 201
+  res.status(201).json({ message: "Product updated successfully!" });
 };
