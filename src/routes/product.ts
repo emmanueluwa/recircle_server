@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   deleteProduct,
   deleteProductImage,
+  getProductDetail,
   listNewProduct,
   updateProduct,
 } from "src/controllers/product";
@@ -29,7 +30,8 @@ productRouter.patch(
 );
 
 productRouter.delete("/:id", isAuth, deleteProduct);
-
 productRouter.delete("/image/:productId/:imageId", isAuth, deleteProductImage);
+
+productRouter.get("/:id", isAuth, getProductDetail);
 
 export default productRouter;

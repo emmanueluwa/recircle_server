@@ -3,6 +3,7 @@ import { RequestHandler } from "express";
 import { isValidObjectId } from "mongoose";
 import cloudUploader, { cloudApi } from "src/cloud";
 import ProductModel from "src/models/product";
+import { UserDocument } from "src/models/user";
 import { sendErrorResponse } from "src/utils/helper";
 
 const uploadImage = (filePath: string): Promise<UploadApiResponse> => {
@@ -194,7 +195,6 @@ export const deleteProduct: RequestHandler = async (req, res) => {
 
 export const deleteProductImage: RequestHandler = async (req, res) => {
   //check product is valid
-  console.log(req.params);
   const { productId, imageId } = req.params;
   if (!isValidObjectId(productId))
     return sendErrorResponse(res, "Invalid product id!", 422);
@@ -221,4 +221,35 @@ export const deleteProductImage: RequestHandler = async (req, res) => {
   await cloudUploader.destroy(imageId);
 
   res.json({ message: "Image removed successfully!" });
+};
+
+export const getProductDetail: RequestHandler = async (req, res) => {
+  //check product is valid
+  const { id } = req.params;
+  if (!isValidObjectId(id))
+    return sendErrorResponse(res, "Invalid product id!", 422);
+
+  //using User document as owner
+  const product = await ProductModel.findById(id).populate<{
+    owner: UserDocument;
+  }>("owner");
+  if (!product) return sendErrorResponse(res, "Product not found!", 404);
+
+  res.json({
+    product: {
+      id: product._id,
+      name: product.name,
+      description: product.description,
+      thumbnail: product.thumbnail,
+      category: product.category,
+      date: product.purchasingDate,
+      price: product.price,
+      images: product.images?.map((url) => url),
+      seller: {
+        id: product.owner._id,
+        name: product.owner.name,
+        avatar: product.owner.avatar?.url,
+      },
+    },
+  });
 };
