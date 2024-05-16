@@ -207,13 +207,13 @@ export const deleteProductImage: RequestHandler = async (req, res) => {
     { new: true }
   );
 
-  if (!product) return sendErrorResponse(res, "Invalid image id!", 422);
+  if (!product) return sendErrorResponse(res, "Product not found!", 422);
 
   //update thumbnail if deleted
   if (product.thumbnail?.includes(imageId)) {
     const images = product.images;
     if (images) product.thumbnail = images[0].url;
-    product.thumbnail = "";
+    else product.thumbnail = "";
     await product.save();
   }
 
