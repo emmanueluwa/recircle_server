@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   deleteProduct,
+  deleteProductImage,
   listNewProduct,
   updateProduct,
 } from "src/controllers/product";
@@ -28,4 +29,7 @@ productRouter.patch(
 );
 
 productRouter.delete("/:id", isAuth, deleteProduct);
+
+productRouter.delete("/image/:productId/:imageId", isAuth, deleteProductImage);
+
 export default productRouter;

@@ -108,7 +108,8 @@ export const updateProduct: RequestHandler = async (req, res) => {
 
   //restrict no. of image upload
   if (isMultipleImages) {
-    if (product.images.length + images.length > 5)
+    const oldImages = product.images?.length || 0;
+    if (oldImages + images.length > 5)
       return sendErrorResponse(res, "Image files cannot be more than 5!", 422);
   }
 
@@ -149,11 +150,14 @@ export const updateProduct: RequestHandler = async (req, res) => {
       return { url: secure_url, id: public_id };
     });
 
-    product.images.push(...newImages);
+    if (product.images) product.images.push(...newImages);
+    else product.images = newImages;
   } else {
     if (images) {
       const { secure_url, public_id } = await uploadImage(images.filepath);
-      product.images.push({ url: secure_url, id: public_id });
+      if (product.images)
+        product.images.push({ url: secure_url, id: public_id });
+      else product.images = [{ url: secure_url, id: public_id }];
     }
   }
 
@@ -178,7 +182,7 @@ export const deleteProduct: RequestHandler = async (req, res) => {
 
   if (!product) return sendErrorResponse(res, "Product not found!", 404);
 
-  const images = product.images;
+  const images = product.images || [];
   if (images.length) {
     const ids = images.map(({ id }) => id);
     await cloudApi.delete_resources(ids);
@@ -186,4 +190,35 @@ export const deleteProduct: RequestHandler = async (req, res) => {
 
   //creating object for db = 201
   res.json({ message: "Product removed successfully!" });
+};
+
+export const deleteProductImage: RequestHandler = async (req, res) => {
+  //check product is valid
+  console.log(req.params);
+  const { productId, imageId } = req.params;
+  if (!isValidObjectId(productId))
+    return sendErrorResponse(res, "Invalid product id!", 422);
+
+  //remove from db
+  const product = await ProductModel.findOneAndUpdate(
+    { _id: productId, owner: req.user.id },
+    //loop through images and pull out value that matches given id
+    { $pull: { images: { id: imageId } } },
+    { new: true }
+  );
+
+  if (!product) return sendErrorResponse(res, "Invalid image id!", 422);
+
+  //update thumbnail if deleted
+  if (product.thumbnail?.includes(imageId)) {
+    const images = product.images;
+    if (images) product.thumbnail = images[0].url;
+    product.thumbnail = "";
+    await product.save();
+  }
+
+  //remove from cloud storage
+  await cloudUploader.destroy(imageId);
+
+  res.json({ message: "Image removed successfully!" });
 };
