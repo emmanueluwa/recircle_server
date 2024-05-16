@@ -1,7 +1,7 @@
 import { UploadApiResponse } from "cloudinary";
 import { RequestHandler } from "express";
 import { isValidObjectId } from "mongoose";
-import cloudUploader from "src/cloud";
+import cloudUploader, { cloudApi } from "src/cloud";
 import ProductModel from "src/models/product";
 import { sendErrorResponse } from "src/utils/helper";
 
@@ -162,4 +162,28 @@ export const updateProduct: RequestHandler = async (req, res) => {
 
   //creating object for db = 201
   res.status(201).json({ message: "Product updated successfully!" });
+};
+
+export const deleteProduct: RequestHandler = async (req, res) => {
+  //check product is valid
+  const productId = req.params.id;
+  if (!isValidObjectId(productId))
+    return sendErrorResponse(res, "Invalid product id!", 422);
+
+  //check if product created by user requesting
+  const product = await ProductModel.findOneAndDelete({
+    _id: productId,
+    owner: req.user.id,
+  });
+
+  if (!product) return sendErrorResponse(res, "Product not found!", 404);
+
+  const images = product.images;
+  if (images.length) {
+    const ids = images.map(({ id }) => id);
+    await cloudApi.delete_resources(ids);
+  }
+
+  //creating object for db = 201
+  res.json({ message: "Product removed successfully!" });
 };

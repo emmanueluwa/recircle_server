@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { listNewProduct, updateProduct } from "src/controllers/product";
+import {
+  deleteProduct,
+  listNewProduct,
+  updateProduct,
+} from "src/controllers/product";
 import { isAuth } from "src/middleware/auth";
 import fileParser from "src/middleware/fileParser";
 import validate from "src/middleware/validate";
@@ -23,4 +27,5 @@ productRouter.patch(
   updateProduct
 );
 
+productRouter.delete("/:id", isAuth, deleteProduct);
 export default productRouter;
