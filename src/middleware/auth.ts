@@ -8,6 +8,7 @@ interface UserProfile {
   name: string;
   email: string;
   verified: boolean;
+  avatar?: string;
 }
 
 //make changes to global variable
@@ -41,6 +42,7 @@ export const isAuth: RequestHandler = async (req, res, next) => {
       name: user.name,
       email: user.email,
       verified: user.verified,
+      avatar: user.avatar?.url,
     };
 
     next();
