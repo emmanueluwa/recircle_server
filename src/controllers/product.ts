@@ -4,6 +4,7 @@ import { isValidObjectId } from "mongoose";
 import cloudUploader, { cloudApi } from "src/cloud";
 import ProductModel from "src/models/product";
 import { UserDocument } from "src/models/user";
+import categories from "src/utils/categories";
 import { sendErrorResponse } from "src/utils/helper";
 
 const uploadImage = (filePath: string): Promise<UploadApiResponse> => {
@@ -252,4 +253,25 @@ export const getProductDetail: RequestHandler = async (req, res) => {
       },
     },
   });
+};
+
+export const getProductsByCategory: RequestHandler = async (req, res) => {
+  //check product is valid
+  const { category } = req.params;
+  if (!categories.includes(category))
+    return sendErrorResponse(res, "Invalid category!", 422);
+
+  //using User document as owner
+  const products = await ProductModel.find({ category });
+  const listings = products.map((product) => {
+    return {
+      id: product._id,
+      name: product.name,
+      thumbnail: product.thumbnail,
+      category: product.category,
+      price: product.price,
+    };
+  });
+
+  res.json({ products: listings });
 };

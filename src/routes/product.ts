@@ -3,6 +3,7 @@ import {
   deleteProduct,
   deleteProductImage,
   getProductDetail,
+  getProductsByCategory,
   listNewProduct,
   updateProduct,
 } from "src/controllers/product";
@@ -33,5 +34,6 @@ productRouter.delete("/:id", isAuth, deleteProduct);
 productRouter.delete("/image/:productId/:imageId", isAuth, deleteProductImage);
 
 productRouter.get("/:id", isAuth, getProductDetail);
+productRouter.get("/by-category/:category", isAuth, getProductsByCategory);
 
 export default productRouter;

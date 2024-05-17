@@ -1,0 +1,182 @@
+[
+  {
+    "owner": {
+      "$oid": "663f23915653a1be9dec23f2"
+    },
+    "name": "stunna120",
+    "description": "120never broke again",
+    "price": 120000000,
+    "purchasingDate": {
+      "$date": "2024-05-16T20:18:49.271Z"
+    },
+    "category": "Electronics",
+    "images": [],
+    "thumbnail": "",
+    "createdAt": {
+      "$date": "2024-05-15T20:20:44.062Z"
+    },
+    "updatedAt": {
+      "$date": "2024-05-16T19:20:26.987Z"
+    }
+  },
+  {
+    "owner": {
+      "$oid": "663f23915653a1be9dec23f2"
+    },
+    "name": "UltraSmartWatch",
+    "description": "Latest model with health tracking",
+    "price": 25000,
+    "purchasingDate": {
+      "$date": "2024-04-12T14:10:23.000Z"
+    },
+    "category": "Fitness",
+    "images": [],
+    "thumbnail": "",
+    "createdAt": {
+      "$date": "2024-04-10T10:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2024-05-01T12:00:00.000Z"
+    }
+  },
+  {
+    "owner": {
+      "$oid": "663f23915653a1be9dec23f2"
+    },
+    "name": "StylishSofaSet",
+    "description": "Comfortable and elegant sofa set",
+    "price": 750000,
+    "purchasingDate": {
+      "$date": "2024-03-05T09:45:30.000Z"
+    },
+    "category": "Home & Kitchen",
+    "images": [],
+    "thumbnail": "",
+    "createdAt": {
+      "$date": "2024-03-01T08:30:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2024-03-10T11:00:00.000Z"
+    }
+  },
+  {
+    "owner": {
+      "$oid": "663f23915653a1be9dec23f2"
+    },
+    "name": "ClassicNovel",
+    "description": "A timeless classic novel",
+    "price": 1500,
+    "purchasingDate": {
+      "$date": "2024-02-25T16:20:15.000Z"
+    },
+    "category": "Books",
+    "images": [""],
+    "thumbnail": "",
+    "createdAt": {
+      "$date": "2024-02-20T14:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2024-02-28T13:00:00.000Z"
+    }
+  },
+  {
+    "owner": {
+      "$oid": "663f23915653a1be9dec23f2"
+    },
+    "name": "KidsActionFigure",
+    "description": "Popular action figure for kids",
+    "price": 3000,
+    "purchasingDate": {
+      "$date": "2024-01-15T11:10:45.000Z"
+    },
+    "category": "Toys & Games",
+    "images": [""],
+    "thumbnail": "",
+    "createdAt": {
+      "$date": "2024-01-10T09:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2024-01-20T10:00:00.000Z"
+    }
+  },
+  {
+    "owner": {
+      "$oid": "663f23915653a1be9dec23f2"
+    },
+    "name": "LuxuryFaceCream",
+    "description": "Premium skincare product",
+    "price": 50000,
+    "purchasingDate": {
+      "$date": "2024-05-10T14:30:00.000Z"
+    },
+    "category": "Beauty & Personal Care",
+    "images": [],
+    "thumbnail": "",
+    "createdAt": {
+      "$date": "2024-05-01T10:20:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2024-05-15T12:40:00.000Z"
+    }
+  },
+  {
+    "owner": {
+      "$oid": "663f23915653a1be9dec23f2"
+    },
+    "name": "MountainBikeX500",
+    "description": "High-performance mountain bike",
+    "price": 850000,
+    "purchasingDate": {
+      "$date": "2024-04-18T17:15:00.000Z"
+    },
+    "category": "Sports & Outdoors",
+    "images": [],
+    "thumbnail": "",
+    "createdAt": {
+      "$date": "2024-04-05T12:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2024-04-20T15:30:00.000Z"
+    }
+  },
+  {
+    "owner": {
+      "$oid": "663f23915653a1be9dec23f2"
+    },
+    "name": "CarTireSet",
+    "description": "Durable and reliable car tire set",
+    "price": 450000,
+    "purchasingDate": {
+      "$date": "2024-03-28T10:05:00.000Z"
+    },
+    "category": "Automotive",
+    "images": [],
+    "thumbnail": "",
+    "createdAt": {
+      "$date": "2024-03-20T09:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2024-03-30T11:00:00.000Z"
+    }
+  },
+  {
+    "owner": {
+      "$oid": "663f23915653a1be9dec23f2"
+    },
+    "name": "PowerDrillPro",
+    "description": "High torque power drill",
+    "price": 120000,
+    "purchasingDate": {
+      "$date": "2024-02-15T08:00:00.000Z"
+    },
+    "category": "Tools & Home Improvement",
+    "images": [],
+    "thumbnail": "",
+    "createdAt": {
+      "$date": "2024-02-01T07:00:00.000Z"
+    },
+    "updatedAt": {
+      "$date": "2024-02-20T10:00:00.000Z"
+    }
+  }
+]
