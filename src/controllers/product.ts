@@ -258,11 +258,19 @@ export const getProductDetail: RequestHandler = async (req, res) => {
 export const getProductsByCategory: RequestHandler = async (req, res) => {
   //check product is valid
   const { category } = req.params;
+  const { pageNo = "1", limit = "10" } = req.query as {
+    pageNo: string;
+    limit: string;
+  };
   if (!categories.includes(category))
     return sendErrorResponse(res, "Invalid category!", 422);
 
   //using User document as owner
-  const products = await ProductModel.find({ category });
+  const products = await ProductModel.find({ category })
+    .sort("-createdAt")
+    .skip((+pageNo - 1) * +limit)
+    .limit(+limit);
+
   const listings = products.map((product) => {
     return {
       id: product._id,
