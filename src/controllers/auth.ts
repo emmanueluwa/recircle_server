@@ -123,8 +123,9 @@ export const signIn: RequestHandler = async (req, res) => {
       email: user.email,
       name: user.name,
       verified: user.verified,
+      avatar: user.avatar?.url,
     },
-    tokens: { refresh: refreshToken, acces: accessToken },
+    tokens: { refresh: refreshToken, access: accessToken },
   });
 };
 
@@ -244,7 +245,7 @@ export const grantValid: RequestHandler = async (req, res) => {
 };
 
 export const updatePassword: RequestHandler = async (req, res) => {
-  // check user, previous middleware alrady checked token and password
+  // check user, previous middleware already checked token and password
   const { id, password } = req.body;
   const user = await UserModel.findById(id);
   if (!user) return sendErrorResponse(res, "Unauthorised access!", 403);

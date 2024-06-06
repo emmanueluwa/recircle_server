@@ -18,7 +18,7 @@ yup.addMethod(yup.string, "email", function validateEmail(message) {
 const tokenAndId = {
   id: yup.string().test({
     name: "valid-id",
-    mesage: "Invalid user id",
+    message: "Invalid user id",
     test: (value) => isValidObjectId(value),
   }),
   token: yup.string().required("token is missing"),

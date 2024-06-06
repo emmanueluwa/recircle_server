@@ -6,6 +6,7 @@ import authRouter from "./routes/auth";
 import path from "path";
 import formidable from "formidable";
 import productRouter from "./routes/product";
+import { sendErrorResponse } from "./utils/helper";
 
 const app = express();
 
@@ -32,6 +33,10 @@ app.post("/upload-file", async (req, res) => {
 app.use(function (err, req, res, next) {
   res.status(500).json({ message: err.message });
 } as express.ErrorRequestHandler);
+
+app.use("*", (req, res) => {
+  sendErrorResponse(res, "Not Found!", 404);
+});
 
 app.listen(8000, () => {
   console.log("app running on localhost port 8000");
