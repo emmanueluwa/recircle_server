@@ -2,6 +2,8 @@ import "dotenv/config";
 import "express-async-errors";
 import "./db";
 import express, { RequestHandler } from "express";
+import http from "http";
+import { Server } from "socket.io";
 import authRouter from "./routes/auth";
 import path from "path";
 import formidable from "formidable";
@@ -9,6 +11,12 @@ import productRouter from "./routes/product";
 import { sendErrorResponse } from "./utils/helper";
 
 const app = express();
+
+const server = http.createServer(app);
+//path for frontend to send messages to
+const io = new Server(server, {
+  path: "/socket-message",
+});
 
 app.use(express.static("src/public"));
 
@@ -18,6 +26,11 @@ app.use(express.urlencoded({ extended: false }));
 // API Routes
 app.use("/auth", authRouter);
 app.use("/product", productRouter);
+
+//socket io
+io.on("connection", (socket) => {
+  console.log("user is connected!");
+});
 
 app.post("/upload-file", async (req, res) => {
   const form = formidable({
@@ -38,6 +51,6 @@ app.use("*", (req, res) => {
   sendErrorResponse(res, "Not Found!", 404);
 });
 
-app.listen(8000, () => {
+server.listen(8000, () => {
   console.log("app running on localhost port 8000");
 });
