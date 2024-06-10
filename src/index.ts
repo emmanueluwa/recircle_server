@@ -9,6 +9,7 @@ import path from "path";
 import formidable from "formidable";
 import productRouter from "./routes/product";
 import { sendErrorResponse } from "./utils/helper";
+import { TokenExpiredError, verify } from "jsonwebtoken";
 
 const app = express();
 
@@ -28,6 +29,24 @@ app.use("/auth", authRouter);
 app.use("/product", productRouter);
 
 //socket io
+io.use((socket, next) => {
+  const socketReq = socket.handshake.auth as { token: string } | undefined;
+  if (!socketReq?.token) {
+    return next(new Error("Unauthorised request!"));
+  }
+
+  try {
+    socket.data.jwtDecode = verify(socketReq.token, process.env.JWT_SECRET!);
+  } catch (error) {
+    if (error instanceof TokenExpiredError) {
+      return next(new Error("jwt expired"));
+    }
+
+    return next(new Error("invalid token!"));
+  }
+
+  next();
+});
 io.on("connection", (socket) => {
   console.log("user is connected!");
 });
