@@ -11,6 +11,7 @@ import formidable from "formidable";
 import productRouter from "./routes/product";
 import { sendErrorResponse } from "./utils/helper";
 import { TokenExpiredError, verify } from "jsonwebtoken";
+import conversationRouter from "./routes/conversation";
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use(express.urlencoded({ extended: false }));
 // API Routes
 app.use("/auth", authRouter);
 app.use("/product", productRouter);
+app.use("/conversation", conversationRouter);
 
 //socket io
 io.use((socket, next) => {
