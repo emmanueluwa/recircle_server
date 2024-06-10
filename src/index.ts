@@ -3,6 +3,7 @@ import "express-async-errors";
 import "./db";
 import express, { RequestHandler } from "express";
 import http from "http";
+import morgan from "morgan";
 import { Server } from "socket.io";
 import authRouter from "./routes/auth";
 import path from "path";
@@ -19,8 +20,9 @@ const io = new Server(server, {
   path: "/socket-message",
 });
 
-app.use(express.static("src/public"));
+app.use(morgan("dev"));
 
+app.use(express.static("src/public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -48,6 +50,8 @@ io.use((socket, next) => {
   next();
 });
 io.on("connection", (socket) => {
+  console.log(socket.data);
+
   console.log("user is connected!");
 });
 
