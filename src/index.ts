@@ -12,6 +12,7 @@ import productRouter from "./routes/product";
 import { sendErrorResponse } from "./utils/helper";
 import { TokenExpiredError, verify } from "jsonwebtoken";
 import conversationRouter from "./routes/conversation";
+import ConversationModel from "./models/conversation";
 
 const app = express();
 
@@ -51,17 +52,61 @@ io.use((socket, next) => {
 
   next();
 });
+
+type MessageProfile = {
+  id: string;
+  name: string;
+  avatar?: string;
+};
+
+type IncomingMessage = {
+  message: {
+    id: string;
+    time: string;
+    text: string;
+    user: MessageProfile;
+  };
+  to: string;
+  conversationId: string;
+};
+
+type OutgoingMessageResponse = {
+  message: {
+    id: string;
+    time: string;
+    text: string;
+    user: MessageProfile;
+  };
+  from: MessageProfile;
+  conversationId: string;
+};
+
 io.on("connection", (socket) => {
   const socketData = socket.data as { jwtDecode: { id: string } };
 
   const userId = socketData.jwtDecode.id;
   socket.join(userId);
 
-  socket.on("chat:new", (data) => {
-    // socket
-    //   .to(data.to)
-    //   .emit("chat:message", { message: "This is from node server" });
-    console.log(data);
+  socket.on("chat:new", async (data: IncomingMessage) => {
+    const { conversationId, to, message } = data;
+
+    await ConversationModel.findByIdAndUpdate(conversationId, {
+      $push: {
+        chats: {
+          sentBy: message.user.id,
+          content: message.text,
+          timestamp: message.time,
+        },
+      },
+    });
+
+    const messageResponse: OutgoingMessageResponse = {
+      from: message.user,
+      conversationId,
+      message: message,
+    };
+
+    socket.to(to).emit("chat:message", messageResponse);
   });
 });
 
