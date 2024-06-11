@@ -52,9 +52,13 @@ io.use((socket, next) => {
   next();
 });
 io.on("connection", (socket) => {
-  console.log(socket.data);
+  // console.log(socket.data);
+  // console.log("user is connected!");
 
-  console.log("user is connected!");
+  socket.on("chat:new", (data) => {
+    console.log(data);
+    socket.emit("chat:message", { message: "This is from node server" });
+  });
 });
 
 app.post("/upload-file", async (req, res) => {
