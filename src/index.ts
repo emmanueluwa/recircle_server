@@ -52,12 +52,16 @@ io.use((socket, next) => {
   next();
 });
 io.on("connection", (socket) => {
-  // console.log(socket.data);
-  // console.log("user is connected!");
+  const socketData = socket.data as { jwtDecode: { id: string } };
+
+  const userId = socketData.jwtDecode.id;
+  socket.join(userId);
 
   socket.on("chat:new", (data) => {
+    // socket
+    //   .to(data.to)
+    //   .emit("chat:message", { message: "This is from node server" });
     console.log(data);
-    socket.emit("chat:message", { message: "This is from node server" });
   });
 });
 
