@@ -169,6 +169,13 @@ export const grantAccesToken: RequestHandler = async (req, res) => {
   await user.save();
 
   res.json({
+    profile: {
+      id: user._id,
+      email: user.email,
+      name: user.name,
+      verified: user.verified,
+      avatar: user.avatar?.url,
+    },
     tokens: { refresh: newRefreshToken, access: newAccessToken },
   });
 };
