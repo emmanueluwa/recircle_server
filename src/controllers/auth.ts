@@ -107,7 +107,7 @@ export const signIn: RequestHandler = async (req, res) => {
 
   //generate tokens
   const accessToken = jwt.sign(payload, JWT_SECRET, {
-    expiresIn: "1m",
+    expiresIn: "15m",
   });
   const refreshToken = jwt.sign(payload, JWT_SECRET);
 
@@ -159,7 +159,7 @@ export const grantAccesToken: RequestHandler = async (req, res) => {
 
   //generate tokens
   const newAccessToken = jwt.sign({ id: user._id }, JWT_SECRET, {
-    expiresIn: "1m",
+    expiresIn: "15m",
   });
   const newRefreshToken = jwt.sign({ id: user._id }, JWT_SECRET);
 
