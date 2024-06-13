@@ -108,6 +108,10 @@ io.on("connection", (socket) => {
 
     socket.to(to).emit("chat:message", messageResponse);
   });
+
+  socket.on("chat:typing", (typingData: { to: string; active: boolean }) => {
+    socket.to(typingData.to).emit("chat:typing", { typing: typingData.active });
+  });
 });
 
 app.post("/upload-file", async (req, res) => {
