@@ -346,6 +346,7 @@ export const searchProducts: RequestHandler = async (req, res) => {
     results: products.map((product) => ({
       id: product._id,
       name: product.name,
+      thumbnail: product.thumbnail,
     })),
   });
 };
