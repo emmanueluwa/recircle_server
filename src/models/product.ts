@@ -2,6 +2,7 @@ import { Schema } from "mongoose";
 import { model } from "mongoose";
 import { Document } from "mongoose";
 import categories from "src/utils/categories";
+import locations from "src/utils/locations";
 
 type productImage = { url: string; id: string };
 
@@ -11,6 +12,7 @@ export interface ProductDocument extends Document {
   price: number;
   purchasingDate: Date;
   category: string;
+  location: string;
   images?: productImage[];
   thumbnail?: string;
   description: string;
@@ -47,6 +49,7 @@ const schema = new Schema<ProductDocument>(
       enum: [...categories],
       required: true,
     },
+    location: { type: String, enum: [...locations], required: true },
     images: [
       {
         type: Object,
