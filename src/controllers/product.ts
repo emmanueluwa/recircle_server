@@ -284,6 +284,36 @@ export const getProductsByCategory: RequestHandler = async (req, res) => {
   res.json({ products: listings });
 };
 
+export const getProductsByLocation: RequestHandler = async (req, res) => {
+  //check product is valid
+  const { location } = req.params;
+  const { pageNo = "1", limit = "10" } = req.query as {
+    pageNo: string;
+    limit: string;
+  };
+  if (!categories.includes(location))
+    return sendErrorResponse(res, "Invalid category!", 422);
+
+  //using User document as owner
+  const products = await ProductModel.find({ location })
+    .sort("-createdAt")
+    .skip((+pageNo - 1) * +limit)
+    .limit(+limit);
+
+  const listings = products.map((product) => {
+    return {
+      id: product._id,
+      name: product.name,
+      thumbnail: product.thumbnail,
+      category: product.category,
+      location: product.location,
+      price: product.price,
+    };
+  });
+
+  res.json({ products: listings });
+};
+
 export const getLatestProducts: RequestHandler = async (req, res) => {
   const products = await ProductModel.find().sort("-createdAt").limit(10);
 
