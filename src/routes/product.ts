@@ -38,6 +38,8 @@ productRouter.delete("/image/:productId/:imageId", isAuth, deleteProductImage);
 
 productRouter.get("/detail/:id", isAuth, getProductDetail);
 productRouter.get("/by-category/:category", isAuth, getProductsByCategory);
+productRouter.get("/by-location/:location", isAuth, getProductsByCategory);
+
 productRouter.get("/latest", isAuth, getLatestProducts);
 productRouter.get("/listings", isAuth, getListings);
 
