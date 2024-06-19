@@ -76,6 +76,7 @@ type OutgoingMessageResponse = {
     time: string;
     text: string;
     user: MessageProfile;
+    viewed: boolean;
   };
   from: MessageProfile;
   conversationId: string;
@@ -103,7 +104,7 @@ io.on("connection", (socket) => {
     const messageResponse: OutgoingMessageResponse = {
       from: message.user,
       conversationId,
-      message: message,
+      message: { ...message, viewed: false },
     };
 
     socket.to(to).emit("chat:message", messageResponse);
@@ -111,6 +112,10 @@ io.on("connection", (socket) => {
 
   socket.on("chat:typing", (typingData: { to: string; active: boolean }) => {
     socket.to(typingData.to).emit("chat:typing", { typing: typingData.active });
+  });
+
+  socket.on("chat:seen", (seenData) => {
+    console.log(seenData);
   });
 });
 

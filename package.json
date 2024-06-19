@@ -22,6 +22,7 @@
     "mongoose": "^8.3.4",
     "morgan": "^1.10.0",
     "nodemailer": "^6.9.13",
+    "react-native-gifted-chat": "^2.4.0",
     "socket.io": "^4.7.5",
     "ts-node-dev": "^2.0.0",
     "tsc-alias": "^1.8.8",

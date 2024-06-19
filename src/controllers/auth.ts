@@ -96,6 +96,7 @@ export const signIn: RequestHandler = async (req, res) => {
 
   //find user
   const user = await UserModel.findOne({ email });
+  console.log("got here");
   if (!user) return sendErrorResponse(res, "Email/Password missmatch", 403);
 
   //check password
