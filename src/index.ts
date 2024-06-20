@@ -13,6 +13,7 @@ import { sendErrorResponse } from "./utils/helper";
 import { TokenExpiredError, verify } from "jsonwebtoken";
 import conversationRouter from "./routes/conversation";
 import ConversationModel from "./models/conversation";
+import { updateSeenStatus } from "./controllers/conversation";
 
 const app = express();
 
@@ -82,6 +83,12 @@ type OutgoingMessageResponse = {
   conversationId: string;
 };
 
+type SeenData = {
+  messageId: string;
+  peerId: string;
+  conversationId: string;
+};
+
 io.on("connection", (socket) => {
   const socketData = socket.data as { jwtDecode: { id: string } };
 
@@ -114,9 +121,13 @@ io.on("connection", (socket) => {
     socket.to(typingData.to).emit("chat:typing", { typing: typingData.active });
   });
 
-  socket.on("chat:seen", (seenData) => {
-    console.log(seenData);
-  });
+  socket.on(
+    "chat:seen",
+    async ({ conversationId, messageId, peerId }: SeenData) => {
+      await updateSeenStatus(peerId, conversationId);
+      socket.to(peerId).emit("chat:seen", { conversationId, messageId });
+    }
+  );
 });
 
 app.post("/upload-file", async (req, res) => {

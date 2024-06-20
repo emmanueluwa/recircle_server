@@ -6,6 +6,7 @@ import ProductModel, { ProductDocument } from "src/models/product";
 import { UserDocument } from "src/models/user";
 import categories from "src/utils/categories";
 import { sendErrorResponse } from "src/utils/helper";
+import locations from "src/utils/locations";
 
 const uploadImage = (filePath: string): Promise<UploadApiResponse> => {
   return cloudUploader.upload(filePath, {
@@ -16,13 +17,15 @@ const uploadImage = (filePath: string): Promise<UploadApiResponse> => {
 };
 
 export const listNewProduct: RequestHandler = async (req, res) => {
-  const { name, price, category, description, purchasingDate } = req.body;
+  const { name, price, category, location, description, purchasingDate } =
+    req.body;
   //create new product without needing thumbnail or image
   const newProduct = new ProductModel({
     owner: req.user.id,
     name,
     price,
     category,
+    location,
     description,
     purchasingDate,
   });
@@ -291,7 +294,7 @@ export const getProductsByLocation: RequestHandler = async (req, res) => {
     pageNo: string;
     limit: string;
   };
-  if (!categories.includes(location))
+  if (!locations.includes(location))
     return sendErrorResponse(res, "Invalid category!", 422);
 
   //using User document as owner
