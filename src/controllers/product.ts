@@ -93,15 +93,22 @@ export const listNewProduct: RequestHandler = async (req, res) => {
 };
 
 export const updateProduct: RequestHandler = async (req, res) => {
-  const { name, price, category, description, purchasingDate, thumbnail } =
-    req.body;
+  const {
+    name,
+    price,
+    category,
+    location,
+    description,
+    purchasingDate,
+    thumbnail,
+  } = req.body;
   const productId = req.params.id;
   if (!isValidObjectId(productId))
     return sendErrorResponse(res, "Invalid product id!", 422);
 
   const product = await ProductModel.findOneAndUpdate(
     { _id: productId, owner: req.user.id },
-    { name, price, category, description, purchasingDate },
+    { name, price, category, location, description, purchasingDate },
     { new: true }
   );
   if (!product) return sendErrorResponse(res, "Product not found!", 404);
@@ -246,6 +253,7 @@ export const getProductDetail: RequestHandler = async (req, res) => {
       description: product.description,
       thumbnail: product.thumbnail,
       category: product.category,
+      location: product.location,
       date: product.purchasingDate,
       price: product.price,
       image: product.images?.map(({ url }) => url),
@@ -280,6 +288,7 @@ export const getProductsByCategory: RequestHandler = async (req, res) => {
       name: product.name,
       thumbnail: product.thumbnail,
       category: product.category,
+      location: product.location,
       price: product.price,
     };
   });
@@ -295,7 +304,7 @@ export const getProductsByLocation: RequestHandler = async (req, res) => {
     limit: string;
   };
   if (!locations.includes(location))
-    return sendErrorResponse(res, "Invalid category!", 422);
+    return sendErrorResponse(res, "Invalid lcoation!", 422);
 
   //using User document as owner
   const products = await ProductModel.find({ location })
@@ -326,6 +335,7 @@ export const getLatestProducts: RequestHandler = async (req, res) => {
       name: product.name,
       thumbnail: product.thumbnail,
       category: product.category,
+      location: product.location,
       price: product.price,
     };
   });
@@ -351,6 +361,7 @@ export const getListings: RequestHandler = async (req, res) => {
       name: product.name,
       thumbnail: product.thumbnail,
       category: product.category,
+      location: product.location,
       price: product.price,
       image: product.images?.map((i) => i.url),
       date: product.purchasingDate,
